@@ -141,14 +141,18 @@ def iou_score(y_true, y_pred, smooth=1e-6):
 
 def precision(y_true, y_pred):
     """Precision metric"""
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    y_true_r = K.round(K.clip(y_true, 0, 1))
+    y_pred_r = K.round(K.clip(y_pred, 0, 1))
+    true_positives = K.sum(y_true_r * y_pred_r)
+    predicted_positives = K.sum(y_pred_r)
     return true_positives / (predicted_positives + K.epsilon())
 
 def recall(y_true, y_pred):
     """Recall metric"""
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    y_true_r = K.round(K.clip(y_true, 0, 1))
+    y_pred_r = K.round(K.clip(y_pred, 0, 1))
+    true_positives = K.sum(y_true_r * y_pred_r)
+    possible_positives = K.sum(y_true_r)
     return true_positives / (possible_positives + K.epsilon())
 
 def f1_score(y_true, y_pred):
@@ -156,7 +160,6 @@ def f1_score(y_true, y_pred):
     p = precision(y_true, y_pred)
     r = recall(y_true, y_pred)
     return 2 * ((p * r) / (p + r + K.epsilon()))
-
 def conv_block(x, filters, kernel_size=3, activation='relu', padding='same'):
     """Convolutional block with batch normalization"""
     x = Conv2D(filters, kernel_size, activation=activation, padding=padding)(x)
